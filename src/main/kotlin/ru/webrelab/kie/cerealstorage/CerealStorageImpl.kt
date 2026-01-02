@@ -20,4 +20,57 @@ class CerealStorageImpl(
 
     private val storage = mutableMapOf<Cereal, Float>()
 
+    override fun addCereal(cereal: Cereal, amount: Float): Float {
+        if (amount >= 0f) {
+            val currentCount = storage.getOrDefault(cereal, 0f)
+            storage[cereal] = currentCount + amount
+            return 0f
+        } else {
+            throw IllegalArgumentException("меньше 0")
+        }
+    }
+
+    override fun getCereal(cereal: Cereal, amount: Float): Float {
+        if (amount >= 0) {
+            if (storage.containsKey(cereal)) {
+                val c = storage[cereal]?.let {
+                    if (it >= 0f) {
+                        it - amount
+                    } else {
+                        it
+                    }
+                }
+                storage[cereal] = c as Float
+            }
+            return storage[cereal] as Float
+        } else {
+            throw IllegalArgumentException("меньше 0")
+        }
+    }
+
+    override fun removeContainer(cereal: Cereal): Boolean {
+        if (storage[cereal] == 0f) {
+            storage.remove(cereal)
+            return true
+        } else {
+            return false
+        }
+    }
+
+    override fun getAmount(cereal: Cereal): Float {
+        return storage.getOrDefault(cereal, 0f)
+    }
+
+    override fun getSpace(cereal: Cereal): Float {
+        if (storage.containsKey(cereal)) {
+            return containerCapacity - storage.getOrDefault(cereal, 0f)
+        } else {
+            throw IllegalStateException("такого контейнера нет")
+        }
+    }
+
+    override fun toString(): String {
+        return storage.toString()
+    }
+
 }
