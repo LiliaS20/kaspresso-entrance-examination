@@ -37,10 +37,19 @@ class CerealStorageImplTest {
     }
 
     @Test
-    fun `количество крупы, которая не уместилась в контейнер`() {
+    fun `количество крупы, которая не уместилась в новый контейнер`() {
         assertEquals(1f, with(storage) {
             addCereal(Cereal.BUCKWHEAT, 11f)
         })
+    }
+
+    @Test
+    fun `количество крупы, которая не уместилась в сущ контейнер`() {
+        with(storage) {
+            addCereal(Cereal.BUCKWHEAT, 2f)
+            addCereal(Cereal.BUCKWHEAT, 10f)
+        }
+        assertEquals(2f, storage.addCereal(Cereal.BUCKWHEAT, 10f))
     }
 
     @Test
@@ -77,6 +86,14 @@ class CerealStorageImplTest {
             getCereal(Cereal.BUCKWHEAT, 6f)
         }
         assertEquals(5f, storage.getAmount(Cereal.BUCKWHEAT))
+    }
+
+    @Test
+    fun `взять крупу из несущ контейнера`() {
+        with(storage) {
+            getCereal(Cereal.BUCKWHEAT, 6f)
+        }
+        assertEquals(0f, storage.getAmount(Cereal.BUCKWHEAT))
     }
 
     @Test

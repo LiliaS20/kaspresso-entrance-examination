@@ -22,9 +22,19 @@ class CerealStorageImpl(
 
     override fun addCereal(cereal: Cereal, amount: Float): Float {
         if (amount >= 0f) {
-            val currentCount = storage.getOrDefault(cereal, 0f)
-            storage[cereal] = currentCount + amount
-            return getSpace(cereal)
+            val currentCount = getAmount(cereal)
+            if (currentCount == 0f) {
+                check(storageCapacity >= storage.values.sum() + amount)
+                storage[cereal] = amount
+                return 0f
+            } else if (getSpace(cereal) >= amount){
+                storage[cereal] = getAmount(cereal) + amount
+                return 0f
+            } else {
+                val c = amount - getSpace(cereal)
+                storage[cereal]?.plus(getSpace(cereal))
+                return c
+            }
         } else {
             throw IllegalArgumentException("меньше 0")
         }
@@ -32,20 +42,13 @@ class CerealStorageImpl(
 
     override fun getCereal(cereal: Cereal, amount: Float): Float {
         if (amount >= 0) {
-            if (storage.containsKey(cereal)) {
-                val c = storage[cereal]?.let {
-                    if (it >= 0f) {
-                        it - amount
-                    } else {
-                        it
-                    }
-                }
-                storage[cereal] = c as Float
+            if (storage.containsKey(cereal) && getAmount(cereal) >= amount) {
+                storage[cereal] = getAmount(cereal) - amount
             }
-            return storage[cereal] as Float
         } else {
             throw IllegalArgumentException("меньше 0")
         }
+        return getAmount(cereal)
     }
 
     override fun removeContainer(cereal: Cereal): Boolean {
