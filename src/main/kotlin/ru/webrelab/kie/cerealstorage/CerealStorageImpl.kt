@@ -24,7 +24,7 @@ class CerealStorageImpl(
         if (amount >= 0f) {
             val currentCount = storage.getOrDefault(cereal, 0f)
             storage[cereal] = currentCount + amount
-            return 0f
+            return getSpace(cereal)
         } else {
             throw IllegalArgumentException("меньше 0")
         }

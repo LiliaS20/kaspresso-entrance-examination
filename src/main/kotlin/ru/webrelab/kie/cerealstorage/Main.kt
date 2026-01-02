@@ -6,7 +6,7 @@ fun main() {
     with(c) {
         addCereal(Cereal.BUCKWHEAT, 10f)
         println(toString())
-        addCereal(Cereal.BUCKWHEAT, 20.6f)
+        println(addCereal(Cereal.BUCKWHEAT, 20.6f))
         println(toString())
         addCereal(Cereal.RICE, 20.6f)
         println(toString())
