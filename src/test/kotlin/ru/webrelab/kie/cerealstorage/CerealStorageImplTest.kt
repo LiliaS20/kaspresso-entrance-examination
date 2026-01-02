@@ -45,11 +45,11 @@ class CerealStorageImplTest {
 
     @Test
     fun `количество крупы, которая не уместилась в сущ контейнер`() {
-        with(storage) {
+        val extraAmount = with(storage) {
             addCereal(Cereal.BUCKWHEAT, 2f)
             addCereal(Cereal.BUCKWHEAT, 10f)
         }
-        assertEquals(2f, storage.addCereal(Cereal.BUCKWHEAT, 10f))
+        assertEquals(2f, extraAmount)
     }
 
     @Test

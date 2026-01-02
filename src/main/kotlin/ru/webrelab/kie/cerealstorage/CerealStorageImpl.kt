@@ -22,17 +22,16 @@ class CerealStorageImpl(
 
     override fun addCereal(cereal: Cereal, amount: Float): Float {
         if (amount >= 0f) {
-            val currentCount = getAmount(cereal)
-            if (currentCount == 0f) {
+            if (getAmount(cereal) == 0f && containerCapacity >= amount) {
                 check(storageCapacity >= storage.values.sum() + amount)
                 storage[cereal] = amount
                 return 0f
-            } else if (getSpace(cereal) >= amount){
+            } else if (containerCapacity - getAmount(cereal) >= amount){
                 storage[cereal] = getAmount(cereal) + amount
                 return 0f
             } else {
-                val c = amount - getSpace(cereal)
-                storage[cereal]?.plus(getSpace(cereal))
+                val c = amount - (containerCapacity - getAmount(cereal))
+                storage[cereal] = amount - c
                 return c
             }
         } else {
@@ -66,7 +65,7 @@ class CerealStorageImpl(
 
     override fun getSpace(cereal: Cereal): Float {
         if (storage.containsKey(cereal)) {
-            return containerCapacity - storage.getOrDefault(cereal, 0f)
+            return containerCapacity - getAmount(cereal)
         } else {
             throw IllegalStateException("такого контейнера нет")
         }
