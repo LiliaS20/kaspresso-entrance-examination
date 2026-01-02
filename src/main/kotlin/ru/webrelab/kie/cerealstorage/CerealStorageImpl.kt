@@ -23,10 +23,10 @@ class CerealStorageImpl(
     override fun addCereal(cereal: Cereal, amount: Float): Float {
         if (amount >= 0f) {
             if (getAmount(cereal) == 0f && containerCapacity >= amount) {
-                check(storageCapacity >= storage.values.sum() + amount)
+                check(storageCapacity / containerCapacity >= storage.keys.count() + 1)
                 storage[cereal] = amount
                 return 0f
-            } else if (containerCapacity - getAmount(cereal) >= amount){
+            } else if (containerCapacity - getAmount(cereal) >= amount) {
                 storage[cereal] = getAmount(cereal) + amount
                 return 0f
             } else {
@@ -72,7 +72,10 @@ class CerealStorageImpl(
     }
 
     override fun toString(): String {
-        return storage.toString()
+        val info = storage.map {
+            "${it.key}%s${it.value}".format(" ".repeat(15 - it.key.toString().length))
+        }.joinToString("\n")
+        return "CEREAL:        COUNT:\n$info"
     }
 
 }

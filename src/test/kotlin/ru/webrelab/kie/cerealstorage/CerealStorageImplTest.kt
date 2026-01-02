@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 
 class CerealStorageImplTest {
 
-    private val storage = CerealStorageImpl(10f, 20f)
+    private val storage = CerealStorageImpl(3.3f, 10f)
 
     @Test
     fun `should throw if containerCapacity is negative`() {
@@ -17,39 +17,53 @@ class CerealStorageImplTest {
     @Test
     fun `если в контейнере больше места, чем в хранилище`() {
         assertThrows(IllegalArgumentException::class.java) {
-            CerealStorageImpl(40f, 10f)
+            CerealStorageImpl(11f, 10f)
         }
     }
 
     @Test
     fun `добавление крупы в новый контейнер`() {
-        storage.addCereal(Cereal.BUCKWHEAT, 2f)
-        assertEquals(2f, storage.getAmount(Cereal.BUCKWHEAT))
+        val amountCereals = with(storage) {
+            addCereal(Cereal.BUCKWHEAT, 2f)
+            getAmount(Cereal.BUCKWHEAT)
+        }
+        assertEquals(2f, amountCereals)
     }
 
     @Test
     fun `добавление крупы в существующий контейнер`() {
-        with(storage) {
-            addCereal(Cereal.BUCKWHEAT, 2f)
-            addCereal(Cereal.BUCKWHEAT, 2.5f)
+        val amountCereals = with(storage) {
+            addCereal(Cereal.BUCKWHEAT, 1f)
+            addCereal(Cereal.BUCKWHEAT, 1.5f)
+            getAmount(Cereal.BUCKWHEAT)
         }
-        assertEquals(4.5f, storage.getAmount(Cereal.BUCKWHEAT))
+        assertEquals(2.5f, amountCereals)
+    }
+
+    @Test
+    fun `добавление крупы в новый контейнер больше чем вместимость`() {
+        assertEquals(
+            0.7f,
+            storage.addCereal(Cereal.BUCKWHEAT, 4f),
+            0.01f
+        )
     }
 
     @Test
     fun `количество крупы, которая не уместилась в новый контейнер`() {
-        assertEquals(1f, with(storage) {
-            addCereal(Cereal.BUCKWHEAT, 11f)
-        })
+        val extraAmount = with(storage) {
+            addCereal(Cereal.BUCKWHEAT, 4f)
+        }
+        assertEquals(0.7f, extraAmount, 0.01f)
     }
 
     @Test
     fun `количество крупы, которая не уместилась в сущ контейнер`() {
         val extraAmount = with(storage) {
             addCereal(Cereal.BUCKWHEAT, 2f)
-            addCereal(Cereal.BUCKWHEAT, 10f)
+            addCereal(Cereal.BUCKWHEAT, 2f)
         }
-        assertEquals(2f, extraAmount)
+        assertEquals(0.7f, extraAmount, 0.01f)
     }
 
     @Test
@@ -62,38 +76,42 @@ class CerealStorageImplTest {
     @Test
     fun `отритальное значение2`() {
         with(storage) {
-            addCereal(Cereal.BUCKWHEAT, 10f)
-            addCereal(Cereal.RICE, 9f)
+            addCereal(Cereal.BUCKWHEAT, 3f)
+            addCereal(Cereal.RICE, 2f)
+            addCereal(Cereal.PEAS, 2f)
         }
         assertThrows(IllegalStateException::class.java) {
-            storage.addCereal(Cereal.MILLET, 5f)
+            storage.addCereal(Cereal.MILLET, 3f)
         }
     }
 
     @Test
     fun `получение остатка крупы после выдачи`() {
-        with(storage) {
-            addCereal(Cereal.BUCKWHEAT, 10f)
-            getCereal(Cereal.BUCKWHEAT, 3f)
+        val amountCereals = with(storage) {
+            addCereal(Cereal.BUCKWHEAT, 3f)
+            getCereal(Cereal.BUCKWHEAT, 2f)
+            getAmount(Cereal.BUCKWHEAT)
         }
-        assertEquals(7f, storage.getAmount(Cereal.BUCKWHEAT))
+        assertEquals(1f, amountCereals)
     }
 
     @Test
     fun `остаток содержимого, если на выдачу нужно больше, чем есть`() {
-        with(storage) {
-            addCereal(Cereal.BUCKWHEAT, 5f)
-            getCereal(Cereal.BUCKWHEAT, 6f)
+        val amountCereals = with(storage) {
+            addCereal(Cereal.BUCKWHEAT, 2f)
+            getCereal(Cereal.BUCKWHEAT, 3f)
+            getAmount(Cereal.BUCKWHEAT)
         }
-        assertEquals(5f, storage.getAmount(Cereal.BUCKWHEAT))
+        assertEquals(2f, amountCereals)
     }
 
     @Test
     fun `взять крупу из несущ контейнера`() {
-        with(storage) {
+        val amountCereals = with(storage) {
             getCereal(Cereal.BUCKWHEAT, 6f)
+            getAmount(Cereal.BUCKWHEAT)
         }
-        assertEquals(0f, storage.getAmount(Cereal.BUCKWHEAT))
+        assertEquals(0f, amountCereals)
     }
 
     @Test
@@ -105,19 +123,23 @@ class CerealStorageImplTest {
 
     @Test
     fun `удаление пустого контейнера`() {
-        with(storage) {
-            addCereal(Cereal.BUCKWHEAT, 5f)
-            getCereal(Cereal.BUCKWHEAT, 5f)
+        assertTrue {
+            with(storage) {
+                addCereal(Cereal.BUCKWHEAT, 3.3f)
+                getCereal(Cereal.BUCKWHEAT, 3.3f)
+                removeContainer(Cereal.BUCKWHEAT)
+            }
         }
-        assertTrue { storage.removeContainer(Cereal.BUCKWHEAT) }
     }
 
     @Test
     fun `удаление не пустого контейнера`() {
-        with(storage) {
-            addCereal(Cereal.BUCKWHEAT, 5f)
+        assertFalse {
+            with(storage) {
+                addCereal(Cereal.BUCKWHEAT, 5f)
+                removeContainer(Cereal.BUCKWHEAT)
+            }
         }
-        assertFalse { storage.removeContainer(Cereal.BUCKWHEAT) }
     }
 
     @Test
@@ -127,10 +149,11 @@ class CerealStorageImplTest {
 
     @Test
     fun `кол-во крупы в сущ контейнере`() {
-        with(storage) {
-            addCereal(Cereal.BUCKWHEAT, 5f)
+        val amountCereals = with(storage) {
+            addCereal(Cereal.BUCKWHEAT, 3.2f)
+            getAmount(Cereal.BUCKWHEAT)
         }
-        assertEquals(5f, storage.getAmount(Cereal.BUCKWHEAT))
+        assertEquals(3.2f, amountCereals)
     }
 
     @Test
@@ -140,10 +163,11 @@ class CerealStorageImplTest {
 
     @Test
     fun `свободное место в контейнере`() {
-        with(storage) {
-            addCereal(Cereal.BUCKWHEAT, 6f)
+        val freeSpace = with(storage) {
+            addCereal(Cereal.BUCKWHEAT, 2.11f)
+            getSpace(Cereal.BUCKWHEAT)
         }
-        assertEquals(4f, storage.getSpace(Cereal.BUCKWHEAT))
+        assertEquals(1.2f, freeSpace, 0.01f)
     }
 
     @Test
