@@ -46,6 +46,8 @@ class CerealStorageImpl(
 
         if (storage.containsKey(cereal) && getAmount(cereal) >= amount) {
             storage[cereal] = getAmount(cereal) - amount
+        } else if (storage.containsKey(cereal) && getAmount(cereal) < amount) {
+            storage[cereal] = 0f
         }
         return getAmount(cereal)
     }

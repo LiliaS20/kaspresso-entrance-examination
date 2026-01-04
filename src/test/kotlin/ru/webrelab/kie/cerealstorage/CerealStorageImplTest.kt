@@ -103,7 +103,7 @@ class CerealStorageImplTest {
             getCereal(Cereal.BUCKWHEAT, 3f)
             getAmount(Cereal.BUCKWHEAT)
         }
-        assertEquals(2f, amountCereals)
+        assertEquals(0f, amountCereals)
     }
 
     @Test
