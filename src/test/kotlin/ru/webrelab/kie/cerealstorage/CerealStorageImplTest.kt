@@ -198,9 +198,12 @@ class CerealStorageImplTest {
 
     @Test
     fun `should add same cereal multiply`() {
-        storage.addCereal(Cereal.RICE, 1f)
+        with(storage) {
+            addCereal(Cereal.RICE, 1f)
+            addCereal(Cereal.BUCKWHEAT, 3f)
+        }
         assertDoesNotThrow {
-            repeat(10) { storage.addCereal(Cereal.PEAS, 5f)}
+            repeat(10) { storage.addCereal(Cereal.PEAS, 2f) }
         }
     }
 }
