@@ -25,19 +25,23 @@ class CerealStorageImpl(
             "Количество добавляемой крупы не может быть отрицательным"
         }
 
+        val currentAmount = getAmount(cereal)
+        val freeSpace = containerCapacity - currentAmount
+
         if (!storage.containsKey(cereal) && containerCapacity >= amount) {
             check(storageCapacity / containerCapacity >= storage.keys.count() + 1)
             storage[cereal] = amount
             return 0f
-        } else if (containerCapacity - getAmount(cereal) >= amount) {
-            storage[cereal] = getAmount(cereal) + amount
+        } else if (freeSpace >= amount) {
+            storage[cereal] = currentAmount + amount
             return 0f
         } else {
-            val extraCereal = amount - (containerCapacity - getAmount(cereal))
-            storage[cereal] = amount - extraCereal
+            val extraCereal = amount - freeSpace
+            storage[cereal] = containerCapacity
             return extraCereal
         }
     }
+
 
     override fun getCereal(cereal: Cereal, amount: Float): Float {
         require(amount >= 0f) {
