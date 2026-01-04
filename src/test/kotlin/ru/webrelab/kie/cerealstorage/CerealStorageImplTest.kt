@@ -8,21 +8,21 @@ class CerealStorageImplTest {
     private val storage = CerealStorageImpl(3.3f, 10f)
 
     @Test
-    fun `should throw if containerCapacity is negative`() {
+    fun `Создание хранилища, где в контейнере отрицательная вместимость`() {
         assertThrows(IllegalArgumentException::class.java) {
             CerealStorageImpl(-4f, 10f)
         }
     }
 
     @Test
-    fun `если в контейнере больше места, чем в хранилище`() {
+    fun `Создание хранилища, где в контейнере больше места, чем в хранилище`() {
         assertThrows(IllegalArgumentException::class.java) {
             CerealStorageImpl(11f, 10f)
         }
     }
 
     @Test
-    fun `добавление крупы в новый контейнер`() {
+    fun `Добавление крупы в новый контейнер`() {
         val amountCereals = with(storage) {
             addCereal(Cereal.BUCKWHEAT, 2f)
             getAmount(Cereal.BUCKWHEAT)
@@ -31,7 +31,7 @@ class CerealStorageImplTest {
     }
 
     @Test
-    fun `добавление крупы в существующий контейнер`() {
+    fun `Добавление крупы в существующий контейнер`() {
         val amountCereals = with(storage) {
             addCereal(Cereal.BUCKWHEAT, 1f)
             addCereal(Cereal.BUCKWHEAT, 1.5f)
@@ -41,7 +41,18 @@ class CerealStorageImplTest {
     }
 
     @Test
-    fun `добавление крупы в новый контейнер больше чем вместимость`() {
+    fun `Полное заполнение контейнера`() {
+        val amountCereals = with(storage) {
+            addCereal(Cereal.BUCKWHEAT, 1f)
+            addCereal(Cereal.BUCKWHEAT, 1.3f)
+            addCereal(Cereal.BUCKWHEAT, 1f)
+            getAmount(Cereal.BUCKWHEAT)
+        }
+        assertEquals(3.5f, amountCereals)
+    }
+
+    @Test
+    fun `Добавление в новый контейнер, количество больше, чем вместимость`() {
         assertEquals(
             0.7f,
             storage.addCereal(Cereal.BUCKWHEAT, 4f),
@@ -50,7 +61,7 @@ class CerealStorageImplTest {
     }
 
     @Test
-    fun `количество крупы, которая не уместилась в новый контейнер`() {
+    fun `Получение количества крупы, которое не уместилось в новый контейнер`() {
         val extraAmount = with(storage) {
             addCereal(Cereal.BUCKWHEAT, 4f)
         }
@@ -58,7 +69,7 @@ class CerealStorageImplTest {
     }
 
     @Test
-    fun `количество крупы, которая не уместилась в сущ контейнер`() {
+    fun `Получение количества крупы, которое не уместилась в существующий контейнер`() {
         val extraAmount = with(storage) {
             addCereal(Cereal.BUCKWHEAT, 2f)
             addCereal(Cereal.BUCKWHEAT, 2f)
@@ -67,18 +78,18 @@ class CerealStorageImplTest {
     }
 
     @Test
-    fun `отритальное значение1`() {
+    fun `Добавление отритального количества крупы`() {
         assertThrows(IllegalArgumentException::class.java) {
             storage.addCereal(Cereal.BUCKWHEAT, -5f)
         }
     }
 
     @Test
-    fun `отритальное значение2`() {
+    fun `Добавление нового контейнера, который не умещается в хранилище`() {
         with(storage) {
-            addCereal(Cereal.BUCKWHEAT, 3f)
+            addCereal(Cereal.BUCKWHEAT, 1f)
             addCereal(Cereal.RICE, 2f)
-            addCereal(Cereal.PEAS, 2f)
+            addCereal(Cereal.PEAS, 1f)
         }
         assertThrows(IllegalStateException::class.java) {
             storage.addCereal(Cereal.MILLET, 3f)
@@ -86,17 +97,17 @@ class CerealStorageImplTest {
     }
 
     @Test
-    fun `получение остатка крупы после выдачи`() {
+    fun `Получение остатка крупы после выдачи`() {
         val amountCereals = with(storage) {
             addCereal(Cereal.BUCKWHEAT, 3f)
-            getCereal(Cereal.BUCKWHEAT, 2f)
+            getCereal(Cereal.BUCKWHEAT, 1.6f)
             getAmount(Cereal.BUCKWHEAT)
         }
-        assertEquals(1f, amountCereals)
+        assertEquals(1.4f, amountCereals)
     }
 
     @Test
-    fun `остаток содержимого, если на выдачу нужно больше, чем есть`() {
+    fun `Получение остатка содержимого контейнера, если на выдачу нужно больше, чем есть в контейнере`() {
         val amountCereals = with(storage) {
             addCereal(Cereal.BUCKWHEAT, 2f)
             getCereal(Cereal.BUCKWHEAT, 3f)
@@ -106,23 +117,26 @@ class CerealStorageImplTest {
     }
 
     @Test
-    fun `взять крупу из несущ контейнера`() {
+    fun `Выдача крупы из несуществующего контейнера`() {
         val amountCereals = with(storage) {
-            getCereal(Cereal.BUCKWHEAT, 6f)
+            getCereal(Cereal.BUCKWHEAT, 3.3f)
             getAmount(Cereal.BUCKWHEAT)
         }
         assertEquals(0f, amountCereals)
     }
 
     @Test
-    fun `отритальное значение3`() {
+    fun `Выдача отрицательного количества крупы`() {
         assertThrows(IllegalArgumentException::class.java) {
-            storage.getCereal(Cereal.BUCKWHEAT, -5f)
+            with(storage) {
+                addCereal(Cereal.BUCKWHEAT, 3.3f)
+                getCereal(Cereal.BUCKWHEAT, -5f)
+            }
         }
     }
 
     @Test
-    fun `удаление пустого контейнера`() {
+    fun `Удаление пустого контейнера`() {
         assertTrue {
             with(storage) {
                 addCereal(Cereal.BUCKWHEAT, 3.3f)
@@ -133,22 +147,22 @@ class CerealStorageImplTest {
     }
 
     @Test
-    fun `удаление не пустого контейнера`() {
+    fun `Удаление непустого контейнера`() {
         assertFalse {
             with(storage) {
-                addCereal(Cereal.BUCKWHEAT, 5f)
+                addCereal(Cereal.BUCKWHEAT, 3.3f)
                 removeContainer(Cereal.BUCKWHEAT)
             }
         }
     }
 
     @Test
-    fun `удаление не сущ контейнера`() {
+    fun `Удаление несуществующего контейнера`() {
         assertFalse { storage.removeContainer(Cereal.BUCKWHEAT) }
     }
 
     @Test
-    fun `кол-во крупы в сущ контейнере`() {
+    fun `Получение количества крупы в существующем контейнере`() {
         val amountCereals = with(storage) {
             addCereal(Cereal.BUCKWHEAT, 3.2f)
             getAmount(Cereal.BUCKWHEAT)
@@ -157,12 +171,12 @@ class CerealStorageImplTest {
     }
 
     @Test
-    fun `кол-во крупы в не суш контейнере`() {
+    fun `Получение количества крупы в несуществующем контейнере`() {
         assertEquals(0f, storage.getAmount(Cereal.BUCKWHEAT))
     }
 
     @Test
-    fun `свободное место в контейнере`() {
+    fun `Получение свободного места в контейнере`() {
         val freeSpace = with(storage) {
             addCereal(Cereal.BUCKWHEAT, 2.11f)
             getSpace(Cereal.BUCKWHEAT)
@@ -171,9 +185,25 @@ class CerealStorageImplTest {
     }
 
     @Test
-    fun `свободное место в не сущ контейнере`() {
+    fun `Получение свободного места в несуществующем контейнере`() {
         assertThrows(IllegalStateException::class.java) {
             storage.getSpace(Cereal.BUCKWHEAT)
         }
+    }
+
+    @Test
+    fun `Отображение информации о хранилище`() {
+        val info = with(storage) {
+            addCereal(Cereal.RICE, 2.74f)
+            addCereal(Cereal.MILLET, 3.3f)
+            addCereal(Cereal.BULGUR, 0.144f)
+            toString()
+        }
+        assertEquals(
+            "CEREAL:        COUNT:\n" +
+                    "RICE           2.74\n" +
+                    "MILLET         3.3\n" +
+                    "BULGUR         0.144", info
+        )
     }
 }

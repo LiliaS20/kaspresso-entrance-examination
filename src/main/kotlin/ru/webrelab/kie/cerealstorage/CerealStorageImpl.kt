@@ -35,7 +35,7 @@ class CerealStorageImpl(
                 return c
             }
         } else {
-            throw IllegalArgumentException("меньше 0")
+            throw IllegalArgumentException("Количество добавляемой крупы не может быть отрицательным")
         }
     }
 
@@ -45,7 +45,7 @@ class CerealStorageImpl(
                 storage[cereal] = getAmount(cereal) - amount
             }
         } else {
-            throw IllegalArgumentException("меньше 0")
+            throw IllegalArgumentException("Количество забираемой крупы не может быть отрицательным")
         }
         return getAmount(cereal)
     }
@@ -67,7 +67,7 @@ class CerealStorageImpl(
         if (storage.containsKey(cereal)) {
             return containerCapacity - getAmount(cereal)
         } else {
-            throw IllegalStateException("такого контейнера нет")
+            throw IllegalStateException("Такой контейнер отсутствует")
         }
     }
 
