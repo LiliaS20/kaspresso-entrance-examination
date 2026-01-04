@@ -21,31 +21,31 @@ class CerealStorageImpl(
     private val storage = mutableMapOf<Cereal, Float>()
 
     override fun addCereal(cereal: Cereal, amount: Float): Float {
-        if (amount >= 0f) {
-            if (getAmount(cereal) == 0f && containerCapacity >= amount) {
-                check(storageCapacity / containerCapacity >= storage.keys.count() + 1)
-                storage[cereal] = amount
-                return 0f
-            } else if (containerCapacity - getAmount(cereal) >= amount) {
-                storage[cereal] = getAmount(cereal) + amount
-                return 0f
-            } else {
-                val c = amount - (containerCapacity - getAmount(cereal))
-                storage[cereal] = amount - c
-                return c
-            }
+        require(amount >= 0f) {
+            "Количество добавляемой крупы не может быть отрицательным"
+        }
+
+        if (getAmount(cereal) == 0f && containerCapacity >= amount) {
+            check(storageCapacity / containerCapacity >= storage.keys.count() + 1)
+            storage[cereal] = amount
+            return 0f
+        } else if (containerCapacity - getAmount(cereal) >= amount) {
+            storage[cereal] = getAmount(cereal) + amount
+            return 0f
         } else {
-            throw IllegalArgumentException("Количество добавляемой крупы не может быть отрицательным")
+            val extraCereal = amount - (containerCapacity - getAmount(cereal))
+            storage[cereal] = amount - extraCereal
+            return extraCereal
         }
     }
 
     override fun getCereal(cereal: Cereal, amount: Float): Float {
-        if (amount >= 0) {
-            if (storage.containsKey(cereal) && getAmount(cereal) >= amount) {
-                storage[cereal] = getAmount(cereal) - amount
-            }
-        } else {
-            throw IllegalArgumentException("Количество забираемой крупы не может быть отрицательным")
+        require(amount >= 0f) {
+            "Количество добавляемой крупы не может быть отрицательным"
+        }
+
+        if (storage.containsKey(cereal) && getAmount(cereal) >= amount) {
+            storage[cereal] = getAmount(cereal) - amount
         }
         return getAmount(cereal)
     }

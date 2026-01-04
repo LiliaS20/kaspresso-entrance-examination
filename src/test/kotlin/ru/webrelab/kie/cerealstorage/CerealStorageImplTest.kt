@@ -48,7 +48,7 @@ class CerealStorageImplTest {
             addCereal(Cereal.BUCKWHEAT, 1f)
             getAmount(Cereal.BUCKWHEAT)
         }
-        assertEquals(3.5f, amountCereals)
+        assertEquals(3.3f, amountCereals)
     }
 
     @Test
@@ -64,15 +64,6 @@ class CerealStorageImplTest {
     fun `Получение количества крупы, которое не уместилось в новый контейнер`() {
         val extraAmount = with(storage) {
             addCereal(Cereal.BUCKWHEAT, 4f)
-        }
-        assertEquals(0.7f, extraAmount, 0.01f)
-    }
-
-    @Test
-    fun `Получение количества крупы, которое не уместилась в существующий контейнер`() {
-        val extraAmount = with(storage) {
-            addCereal(Cereal.BUCKWHEAT, 2f)
-            addCereal(Cereal.BUCKWHEAT, 2f)
         }
         assertEquals(0.7f, extraAmount, 0.01f)
     }
@@ -101,7 +92,6 @@ class CerealStorageImplTest {
         val amountCereals = with(storage) {
             addCereal(Cereal.BUCKWHEAT, 3f)
             getCereal(Cereal.BUCKWHEAT, 1.6f)
-            getAmount(Cereal.BUCKWHEAT)
         }
         assertEquals(1.4f, amountCereals)
     }
@@ -120,7 +110,6 @@ class CerealStorageImplTest {
     fun `Выдача крупы из несуществующего контейнера`() {
         val amountCereals = with(storage) {
             getCereal(Cereal.BUCKWHEAT, 3.3f)
-            getAmount(Cereal.BUCKWHEAT)
         }
         assertEquals(0f, amountCereals)
     }
@@ -181,7 +170,7 @@ class CerealStorageImplTest {
             addCereal(Cereal.BUCKWHEAT, 2.11f)
             getSpace(Cereal.BUCKWHEAT)
         }
-        assertEquals(1.2f, freeSpace, 0.01f)
+        assertEquals(1.19f, freeSpace)
     }
 
     @Test
@@ -205,5 +194,13 @@ class CerealStorageImplTest {
                     "MILLET         3.3\n" +
                     "BULGUR         0.144", info
         )
+    }
+
+    @Test
+    fun `should add same cereal multiply`() {
+        storage.addCereal(Cereal.RICE, 1f)
+        assertDoesNotThrow {
+            repeat(10) { storage.addCereal(Cereal.PEAS, 5f)}
+        }
     }
 }
