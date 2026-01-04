@@ -25,7 +25,7 @@ class CerealStorageImpl(
             "Количество добавляемой крупы не может быть отрицательным"
         }
 
-        if (!storage.containsKey(cereal) && getAmount(cereal) == 0f && containerCapacity >= amount) {
+        if (!storage.containsKey(cereal) && containerCapacity >= amount) {
             check(storageCapacity / containerCapacity >= storage.keys.count() + 1)
             storage[cereal] = amount
             return 0f
